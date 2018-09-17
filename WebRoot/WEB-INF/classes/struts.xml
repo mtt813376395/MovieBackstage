@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+"struts-2.1.dtd">
+<struts>
+  <constant name="struts.custom.i18n.resources" value="globalMessages"/>
+  <constant name="struts.i18n.encoding" value="utf-8"/>
+   <package name="ssh" extends="struts-default" namespace="/">
+     <action name="login" class="loginAction">
+       <result name="input">/index.jsp</result>
+       <result name="success">/frame.jsp</result>
+     </action>
+      <action name="upLoad" class="filmUpDown.UploadAction">
+       <interceptor-ref name="fileUpload">
+          <param name="maximumSize">10000000000000000</param>
+         <param name="allowedTypes">
+         video/mpeg,video/quicktime,video/x-sgi-movie,video/mpeg，video/x-msvideo
+         </param>
+       </interceptor-ref>
+       <interceptor-ref name="defaultStack" />
+       <param name="savePath">./save</param>
+       <result name="input">/filmUp.jsp</result>
+       <result name="success">/filmUpSuccess.jsp</result>
+    </action>
+    <action name="type_*" class="typeAction" method="{1}">
+      <result name="findAll">/type/listType.jsp</result>
+      <result name="saveUI">/type/addType.jsp</result>
+      <result name="saveSuccess" type="redirectAction">type_findAll.action</result>
+      <result name="updateSuccess" type="redirectAction">type_findAll.action</result>
+       <result name="deleteSuccess" type="redirectAction">type_findAll.action</result>
+      <result name="editSuccess">/type/editType.jsp</result>
+    </action>
+    <action name="information_*" class="informationAction" method="{1}">
+      <result name="findAll">/information/list.jsp</result>
+      <result name="saveUI">/information/add.jsp</result>
+      <result name="saveSuccess" type="redirectAction">information_findAll.action</result>
+      <result name="updateSuccess" type="redirectAction">information_findAll.action</result>
+      <result name="deleteSuccess" type="redirectAction">information_findAll.action</result>
+      <result name="editSuccess">/information/edit.jsp</result>
+    </action>
+    <action name="news_*" class="newsAction" method="{1}">
+      <result name="findAll">/news/list.jsp</result>
+      <result name="saveUI">/news/add.jsp</result>
+      <result name="saveSuccess" type="redirectAction">news_findAll.action</result>
+      <result name="updateSuccess" type="redirectAction">news_findAll.action</result>
+      <result name="deleteSuccess" type="redirectAction">news_findAll.action</result>
+      <result name="editSuccess">/news/edit.jsp</result>
+    </action>
+   </package>
+</struts>

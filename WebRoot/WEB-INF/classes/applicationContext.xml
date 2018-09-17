@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:aop="http://www.springframework.org/schema/aop"   
+    xmlns:tx="http://www.springframework.org/schema/tx"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd 
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">  
+    
+    <!-- 引入外部的属性文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- 配置连接池 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    <property name="driverClass" value="${jdbc.driverClass}"/>
+    <property name="jdbcUrl" value="${jdbc.url}"/>
+    <property name="user" value="${jdbc.username}"/>
+    <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <!-- 配置hibernate的相关属性 -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <!-- 注入连接池 -->
+    <property name="dataSource" ref="dataSource"/>
+    <!-- 配置hibernate的属性 -->
+    <property name="hibernateProperties">
+    <props>
+    <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+    <prop key="hibernate.show_sql">true</prop>
+    <prop key="hibernate.format_sql">true</prop>
+    <prop key="hibernate.hbm2ddl.auto">update</prop>
+    </props>
+    </property>
+    <!-- 加载hibernate中的映射文件 -->
+    <property name="mappingResources">
+     <list>
+       <value>com/domain/Information.hbm.xml</value>
+       <value>com/domain/Type.hbm.xml</value>
+       <value>com/domain/User.hbm.xml</value>
+       <value>com/domain/News.hbm.xml</value>
+     </list>
+   </property>
+    </bean>
+<!-- 配置Action的类 -->
+<bean id="loginAction" class="com.action.LoginAction" scope="prototype">
+  <property name="userService" ref="userService"/>
+</bean>
+<bean id="typeAction" class="com.action.TypeAction" scope="prototype">
+  <property name="typeService" ref="typeService"/>
+</bean>
+<bean id="informationAction" class="com.action.InformationAction" scope="prototype">
+  <property name="informationService" ref="informationService"/>
+</bean>
+<bean id="newsAction" class="com.action.NewsAction" scope="prototype">
+  <property name="newsService" ref="newsService"/>
+</bean>
+<!-- 配置业务层的类 -->
+<bean id="userService" class="com.service.impl.UserServiceImpl">
+  <property name="userDao" ref="userDao"/>
+</bean>
+<bean id="typeService" class="com.service.impl.TypeServiceImpl">
+  <property name="typeDao" ref="typeDao"/>
+</bean>
+<bean id="informationService" class="com.service.impl.InformationServiceImpl">
+  <property name="informationDao" ref="informationDao"/>
+</bean>
+<bean id="newsService" class="com.service.impl.NewsServiceImpl">
+  <property name="newsDao" ref="newsDao"/>
+</bean>
+<!-- 配置DAO的类 -->
+<bean id="userDao" class="com.dao.impl.UserDaoImpl">
+  <property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+<bean id="typeDao" class="com.dao.impl.TypeDaoImpl">
+  <property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+<bean id="informationDao" class="com.dao.impl.InformationDaoImpl">
+  <property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+<bean id="newsDao" class="com.dao.impl.NewsDaoImpl">
+  <property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+<!-- 配置事务管理器 -->
+<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+<property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+<!-- 开启注解事务 -->
+<tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
